@@ -1,0 +1,17 @@
+source("methylation_functions.R")
+rgSet<-load_data(sampleSheetPattern = "SampleSheet",working_dir = "\\\\CGS-FS3\\CGS-FS3\\SERVICES\\Methylation\\2019\\Meth-A.Massrali-20024\\Analysis\\")
+gmSet<-preprocess_data(rgSet)
+plotCOntrols(rgSet,"control_plots")
+basedir=getwd()
+dir.create("QC")
+setwd("QC")
+qc<-QCinfo(rgSet)
+setwd(basedir)
+
+plotgmSetQC(gmSet, "gmsetQC")
+plotMDS(gmSet = gmSet, dirForGraph = "MDS", "Slide")
+plotMDS(gmSet = gmSet, dirForGraph = "MDS", "Sample_Group")
+plotMDS(gmSet, dirForGraph = "MDS", "Gender")
+
+bump<-compare_groups(gmSet)
+plotDMRs(gmSet, bump,"DMRS_plot_25b")
