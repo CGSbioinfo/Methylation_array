@@ -24,10 +24,10 @@ This function takes an rgSet (typically the output from load_data) and runs seve
 * *preprocessENmix*: run the preprocessing step of the ENmix package, by default it using the background estimation from the *oob* method, other method available are *est* or *neg*, more details below. The dye biass correction is performed using the *RELIC* method, other methods available are *mean* or *none*. parameter that can be set is the number of cores to use, by default it is set to 10, use *nCores* to adjust it.
 * Outlier CpG measurements are remove using the rm.outlier method
 * Normalisation of the set is performed using the *preProcessQuantile* method from the minfi package
-* Probes with SNPs in their sequence are also removed from the data set.
+* Probes with SNPs in their sequence are removed from the data set.
 
 This function return an gmSet. Note on the choice of background correction method: *oob* stands for out-of-band and ENmix will use out-of-band Infinium I intensities ("oob") to estimate normal distribution parameters to model background noise. Option "est" will use combined methylated and unmethylated intensities to estimate background distribution parameters separately for each color channel and each probe type. Option "neg" will use 600 chip internal controls probes to estimate background distribution parameters.
-For the dye bias method, the *mean* method correction is based on average of red/green ration. The *RELIC* method is based on the method describe in: *Zongli Xu, Sabine A. S. Langie, Patrick De Boever, Jack A. Taylor1 and Liang Niu, RELIC: a novel dye-bias correction method for Illumina Methylation BeadChip, BMC Genomics. 2017; 18: 4.*. 
+For the dye bias method, the *mean* method correction is based on average of red/green ration. The *RELIC* method is based on the method described in: *Zongli Xu, Sabine A. S. Langie, Patrick De Boever, Jack A. Taylor1 and Liang Niu, RELIC: a novel dye-bias correction method for Illumina Methylation BeadChip, BMC Genomics. 2017; 18: 4.*. 
 
 
 
