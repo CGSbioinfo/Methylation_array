@@ -1,5 +1,5 @@
 source("methylation_functions.R")
-rgSet<-load_data(sampleSheetPattern = "SampleSheet",working_dir = "\\\\CGS-FS3\\CGS-FS3\\SERVICES\\Methylation\\2019\\Meth-A.Massrali-20024\\Analysis\\")
+rgSet<-load_data(sampleSheetPattern = "SampleSheet",working_dir = "\\\\CGS-FS3\\CGS-FS3\\SERVICES\\Methylation\\")
 gmSet<-preprocess_data(rgSet)
 plotCOntrols(rgSet,"control_plots")
 basedir=getwd()
@@ -14,4 +14,4 @@ plotMDS(gmSet = gmSet, dirForGraph = "MDS", "Sample_Group")
 plotMDS(gmSet, dirForGraph = "MDS", "Gender")
 
 bump<-compare_groups(gmSet)
-plotDMRs(gmSet, bump,"DMRS_plot_25b")
+plotDMRs(gmSet, bump,"DMRS_plot")

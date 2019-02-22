@@ -8,7 +8,7 @@ library(dplyr)
 
 ### Function to load the data and create an rgSet (red/green set)
 ### takes a workind directory with the data (idat) and a pattern to id the samplesheet file
-load_data<-function(working_dir="", sampleSheetPattern=""){
+loadData<-function(working_dir="", sampleSheetPattern=""){
   if(working_dir=="" | sampleSheetPattern==""){
     cat("Please specify a working directory (working_dir) and/or sampleSheet name pattern (sampleSheetPattern)\n")
   }else{
@@ -22,12 +22,12 @@ load_data<-function(working_dir="", sampleSheetPattern=""){
 
 
 ##preprocessing of the data using preprocess ENMix return a gmSet
-preprocess_data<-function(rgSet){
+preprocessData<-function(rgSet, bgParaEst="oob", nCores=10, dyeCorr="RELIC"){
   if(is.na(rgSet)){
     cat("Please specify a rgSet to process\n")
   }else{
     qc<-QCinfo(rgSet)
-    mdat<-preprocessENmix(rgSet, bgParaEst="oob", QCinfo=qc, nCores=10)
+    mdat<-preprocessENmix(rgSet, bgParaEst=bgParaEst, QCinfo=qc, nCores=nCores)
     beta.mdat<-getBeta(mdat)
     beta.f<-rm.outlier(beta.mdat, qscore=qc, rmcr=T)
     mdat.f<-mdat[match(row.names(beta.f), row.names(mdat)),]
@@ -40,7 +40,7 @@ preprocess_data<-function(rgSet){
 
 
 #compare the groups using bumphunter, will write the results table in the working dir or in the outDir if specified, returns the bumphunter object
-compare_groups<-function(gmSet, outDir="", cutoff=0.25, nullMethod="bootstrap",B=100){
+compareGroups<-function(gmSet, outDir="", cutoff=0.25, nullMethod="bootstrap",B=100, nCores=10){
   if(outDir==""){
     outDir="./"
   }
@@ -51,12 +51,12 @@ compare_groups<-function(gmSet, outDir="", cutoff=0.25, nullMethod="bootstrap",B
   pos<-cbind(start=GRlocation.df$start, end=GRlocation$end)
   clusters<-clusterMaker(chr, pos)
   
-  registerDoParallel(cores=10)
+  registerDoParallel(cores=nCores)
   bump<-bumphunter(gmSet, cluster=clusters,design=design, cutoff=cutoff, nullMethod=nullMethod, B=B)
   results<-bump$table
   
   
-  #get genomic location of the DMRs
+  #get genomic location of the DMRs*Gm
   table_results<-bump$table
   GRresults<-GRanges(seqnames=table_results$chr, ranges=IRanges(start = table_results$start, end=table_results$end), value=table_results$value, area=table_results$area, cluster=table_results$cluster, L=table_results$L, clusterL=table_results$clusterL, p.value=table_results$p.value, fwer=table_results$fwer, p.valueArea=table_results$p.valueArea, fwerArea=table_results$fwerArea)
   
@@ -77,7 +77,7 @@ compare_groups<-function(gmSet, outDir="", cutoff=0.25, nullMethod="bootstrap",B
 
 
 ### plot density and frequency plot for type I, II and I and II combined
-plotCOntrols<-function(rgSet, dirForGraph=""){
+plotrgSetQC<-function(rgSet, dirForGraph=""){
   if(dirForGraph!=""){
     basedir=getwd()
     dir.create(dirForGraph, showWarnings = F)
@@ -234,6 +234,7 @@ plotMDS<-function(gmSet,dirForGraph, pheno){
     dir.create(dirForGraph, showWarnings = F)
     setwd(dirForGraph)
   }
+  m_data<-getM(gmSet)
   d<-dist(t(m_data))
   fit<-cmdscale(d, k=4)
   fit<-DataFrame(fit)
